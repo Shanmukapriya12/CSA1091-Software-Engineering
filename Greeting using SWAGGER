@@ -1,0 +1,194 @@
+openapi: 3.0.3
+info:
+  title: Personalized Greetings API
+  description: |
+    An API for managing personalized greeting messages for users, occasions, and templates.
+  version: 1.0.0
+servers:
+  - url: https://greetings.example.com/api/v1
+tags:
+  - name: greetings
+    description: Operations related to greeting messages
+  - name: users
+    description: Operations related to users
+  - name: occasions
+    description: Manage occasions for greetings
+paths:
+  /users:
+    get:
+      tags:
+        - users
+      summary: List all users
+      description: Retrieve a list of all registered users.
+      responses:
+        '200':
+          description: A list of users
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+    post:
+      tags:
+        - users
+      summary: Add a new user
+      description: Add a new user to the system.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+        required: true
+      responses:
+        '201':
+          description: User added successfully
+  /users/{userId}/greetings:
+    get:
+      tags:
+        - greetings
+      summary: List user greetings
+      description: Retrieve a list of all personalized greetings for a specific user.
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: List of greetings
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Greeting'
+    post:
+      tags:
+        - greetings
+      summary: Create a personalized greeting
+      description: Create a new personalized greeting message for a user.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GreetingRequest'
+        required: true
+      responses:
+        '201':
+          description: Greeting created successfully
+  /occasions:
+    get:
+      tags:
+        - occasions
+      summary: List all occasions
+      description: Retrieve a list of predefined occasions (e.g., birthdays, anniversaries).
+      responses:
+        '200':
+          description: List of occasions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Occasion'
+    post:
+      tags:
+        - occasions
+      summary: Add a new occasion
+      description: Add a new occasion to the system.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Occasion'
+        required: true
+      responses:
+        '201':
+          description: Occasion added successfully
+components:
+  schemas:
+    User:
+      type: object
+      required:
+        - id
+        - name
+        - email
+      properties:
+        id:
+          type: integer
+          example: 101
+        name:
+          type: string
+          example: "Alice Johnson"
+        email:
+          type: string
+          example: "alice.johnson@example.com"
+    Greeting:
+      type: object
+      required:
+        - id
+        - userId
+        - message
+        - occasionId
+        - deliveryDate
+      properties:
+        id:
+          type: integer
+          example: 201
+        userId:
+          type: integer
+          example: 101
+        message:
+          type: string
+          example: "Happy Birthday, Alice! Wishing you a fantastic day filled with love and laughter!"
+        occasionId:
+          type: integer
+          example: 301
+        deliveryDate:
+          type: string
+          format: date
+          example: "2024-12-25"
+    GreetingRequest:
+      type: object
+      required:
+        - userId
+        - occasionId
+        - templateId
+        - personalization
+        - deliveryDate
+      properties:
+        userId:
+          type: integer
+          example: 101
+        occasionId:
+          type: integer
+          example: 301
+        templateId:
+          type: integer
+          example: 401
+        personalization:
+          type: object
+          description: Key-value pairs for customizing the template
+          additionalProperties:
+            type: string
+          example:
+            recipientName: "Alice"
+            senderName: "Bob"
+        deliveryDate:
+          type: string
+          format: date
+          example: "2024-12-25"
+    Occasion:
+      type: object
+      required:
+        - id
+        - name
+      properties:
+        id:
+          type: integer
+          example: 301
+        name:
+          type: string
+          example: "Birthday"
